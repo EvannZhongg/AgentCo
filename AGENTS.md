@@ -98,33 +98,40 @@ Manager 首先尝试复用已有 AgentAsset，不合适时再动态创建新的�
 
 只有真正反复有价值的角色才进入长期资产库。避免Agent无限增长。
 
+> 实现状态：目前只有 AgentInstance（`agent_instances` 表）；AgentAsset、角色复用与受控的 `role` 标识尚未实现，Instance 上还没有资产挂点。
+
 ---
 
 ## 3. Agent 之间允许真正协作
 
-Agent 可以：
+Agent 需要的能力，以及它们各自的落地形式：
 
 ```
-request_info
-delegate
-handoff
-request_review
-feedback
-report
+request_info        → Message（已实现）
+feedback            → Message（已实现）
+request_review      → Message（已实现，类型名为 review_request）
+report              → Artifact（正式产物走 Artifact，不占用短消息）
+delegate / handoff  → Task 操作（已实现：block → assign → unblock/start）
 ```
+
+已实现的 Message 类型共 5 种：`request_info`、`response`、`feedback`、`review_request`、`notification`，单条不超过 4096 UTF-8 字节。
+
+**delegate / handoff 不是 Message 类型。** 归属变更只能通过 Task API 完成；一条写着“已交接”的消息不会改变任务归属。
 
 但不是完全自由群聊。
 
 通信具有：
 
 ```
-Task Scope
-Permission
-Communication Graph
-Message Type
+Task Scope           ✅ 已实现（Message 绑定 taskId）
+Message Type         ✅ 已实现（5 种受控枚举）
+Permission           ⬜ 未实现
+Communication Graph  ⬜ 未实现（当前只投影已发生的 Message，不表达任何未来通信许可）
 ```
 
 这样既允许真实协作，又避免 Multi-Agent 无限聊天。
+
+> 接入 Manager 之前，不要假设通信已经受权限约束：目前任何两个存活的 Agent 都可以互发消息。
 
 ---
 
