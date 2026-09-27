@@ -1,0 +1,17 @@
+{
+  "name": "@agentco/runtime-kernel",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Task-centric local Organization Runtime Kernel",
+  "engines": { "node": ">=22.16.0" },
+  "exports": { ".": { "types": "./dist/packages/runtime/index.d.ts", "import": "./dist/packages/runtime/index.js" } },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test dist/tests/*.test.js",
+    "demo": "npm run build && node dist/examples/organization-run.js",
+    "check": "npm run typecheck && npm test"
+  },
+  "devDependencies": { "@types/node": "22.20.0", "typescript": "5.9.3" }
+}
